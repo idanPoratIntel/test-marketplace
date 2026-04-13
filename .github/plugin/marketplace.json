@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "hsd-update",
-      "description": "Read and update HSD (Hardware Sighting Database) articles via the HSD REST API with Kerberos/SSPI authentication.",
+      "description": "Read and update HSD (Hardware Sighting Database) articles via the HSD REST API with Kerberos/SSPI authentication.2.0.0",
       "version": "2.0.0",
       "source": "./skills/hsd-update",
       "category": "productivity",
