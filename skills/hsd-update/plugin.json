@@ -1,7 +1,7 @@
 {
   "name": "hsd-update",
-  "description": "Read and update HSD (Hardware Sighting Database) articles via the HSD REST API with Kerberos/SSPI authentication. Use when the user asks to read, view, get, update, modify, or close HSD articles, sightings, or hardware sighting database entries. v1.0.0",
-  "version": "1.0.0",
+  "description": "Read and update HSD (Hardware Sighting Database) articles via the HSD REST API with Kerberos/SSPI authentication. Use when the user asks to read, view, get, update, modify, or close HSD articles, sightings, or hardware sighting database entries. v2.0.0",
+  "version": "2.0.0",
   "author": {
     "name": "Intel Corporation",
     "email": "idanmata@intel.com"
