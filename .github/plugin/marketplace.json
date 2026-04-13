@@ -1,0 +1,29 @@
+{
+  "name": "intel-copilot-plugins",
+  "owner": {
+    "name": "Intel Corporation",
+    "email": "idanmata@intel.com"
+  },
+  "metadata": {
+    "description": "Curated Copilot CLI plugins for Intel internal tooling — HSD sighting management and Microsoft Teams integration.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "hsd-update",
+      "description": "Read and update HSD (Hardware Sighting Database) articles via the HSD REST API with Kerberos/SSPI authentication.",
+      "version": "1.0.0",
+      "source": "./skills/hsd-update",
+      "category": "productivity",
+      "keywords": ["hsd", "hardware", "sighting", "kerberos", "intel"]
+    },
+    {
+      "name": "my-teams-messages",
+      "description": "Retrieve your own Microsoft Teams messages from chats and channels using Graph Search API with MSAL device-code authentication.",
+      "version": "1.0.0",
+      "source": "./skills/my-teams-messages",
+      "category": "productivity",
+      "keywords": ["teams", "microsoft", "messages", "graph", "msal"]
+    }
+  ]
+}
