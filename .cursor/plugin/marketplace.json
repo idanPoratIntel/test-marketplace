@@ -4,9 +4,9 @@
     "name": "dcg"
   },
   "metadata": {
-    "description": "A general marketplace of plugins, agents, and MCP servers organized by organization and team.",
+    "description": "A general marketplace of plugins, agents, and MCP servers organized by organization and team for Cursor IDE.",
     "version": "1.3.0",
-    "supportedClients": ["VS Code Copilot", "Cursor", "Claude Code"]
+    "client": "Cursor"
   },
   "plugins": [
     {
@@ -14,6 +14,9 @@
       "description": "Geni plugin via the Geni MCP server for querying Intel internal knowledge bases.",
       "version": "1.0.0",
       "source": "./plugins/dcg/pse/geni-plugin",
+      "mcpConfig": ".cursor-mcp.json",
+      "agents": "agents/",
+      "skills": "skills/",
       "owners": ["orly.abramovich@intel.com", "idan.matan.porat@intel.com"]
     },
     {
@@ -21,6 +24,9 @@
       "description": "VDC plugin via the local VDC CLI MCP server for managing Intel Virtual Data Center resources.",
       "version": "1.0.0",
       "source": "./plugins/dcg/pse/vdc-plugin",
+      "mcpConfig": ".cursor-mcp.json",
+      "agents": "agents/",
+      "skills": "skills/",
       "installScript": "install.ps1",
       "checkCommand": "vdc",
       "owners": ["roni.dayan@intel.com"]
@@ -30,6 +36,7 @@
       "description": "MCP server plugin exposing The Rapid Unit Selection Tool (TRUST) selected features via the Model Context Protocol.",
       "version": "1.0.0",
       "source": "./plugins/dcg/pse/trust-mcp-server",
+      "mcpConfig": ".cursor-mcp.json",
       "owners": ["chuu.tian.yew@intel.com"]
     }
   ]

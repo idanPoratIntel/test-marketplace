@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vdc": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${userHome}/.vscode/agent-plugins/labasaservice.visualstudio.com/_git/ssl-marketplace/plugins/vdc-plugin/skills/install-vdc/scripts/ensure-vdc-and-start-mcp.js"
+      ]
+    }
+  }
+}

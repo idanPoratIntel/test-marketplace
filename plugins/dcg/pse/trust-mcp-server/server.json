@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "agents-marketplace/trust-mcp-server",
+  "title": "TRUST MCP Server",
+  "description": "MCP server exposing The Rapid Unit Selection Tool (TRUST) selected features directly in your AI agent workflow.",
+  "repository": {
+    "url": "https://github.com/intel-innersource/applications.agents-marketplace.plugins",
+    "source": "github",
+    "subfolder": "plugins/dcg/pse/trust-mcp-server"
+  },
+  "version": "1.0.0",
+  "starters": [
+    {
+      "name": "trust-mcp-server",
+      "type": "http",
+      "url": "https://laas-aks-prod01.laas.icloud.intel.com/agentgateway/api/a2a/trust/trustmcpserver/"
+    }
+  ]
+}

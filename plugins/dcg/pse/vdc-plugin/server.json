@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "agents-marketplace/vdc-plugin",
+  "title": "VDC MCP Server",
+  "description": "MCP server powered by the local VDC CLI, exposing Intel Virtual Data Center tools directly in your AI agent workflow.",
+  "repository": {
+    "url": "https://github.com/intel-innersource/applications.agents-marketplace.plugins",
+    "source": "github",
+    "subfolder": "plugins/dcg/pse/vdc-plugin"
+  },
+  "version": "1.0.0",
+  "starters": [
+    {
+      "name": "vdc-plugin",
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "${workspaceFolder}/plugins/dcg/pse/vdc-plugin/skills/install-vdc/scripts/ensure-vdc-and-start-mcp.js",
+        "${workspaceFolder}/plugins/dcg/pse/vdc-plugin"
+      ]
+    }
+  ]
+}

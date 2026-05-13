@@ -1,0 +1,20 @@
+{
+  "name": "vdc-plugin",
+  "description": "VDC plugin exposing Intel VDC tools via the local VDC CLI MCP server for managing Virtual Data Center resources.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": ["vdc", "virtual-data-center", "mcp", "intel", "model-context-protocol", "cli", "ssl"],
+  "category": "developer-tools",
+  "homepage": "https://labasaservice.visualstudio.com/_git/ssl-marketplace",
+  "repository": "https://labasaservice.visualstudio.com/_git/ssl-marketplace",
+  "agents": "agents/",
+  "skills": "skills/",
+  "mcpServers": "./.mcp.json",
+  "cursorMcpServers": "./.cursor-mcp.json",
+  "installer": {
+    "windows": {
+      "script": "install.ps1",
+      "note": "Hosts can run this at plugin install time. MCP also installs the CLI on first server start (Windows) via ensure-vdc-and-start-mcp.js."
+    }
+  }
+}

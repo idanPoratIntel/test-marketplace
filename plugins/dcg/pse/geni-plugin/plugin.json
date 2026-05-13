@@ -1,0 +1,14 @@
+{
+  "name": "geni-plugin",
+  "description": "Geni plugin exposing tools via the Geni MCP server for querying Intel internal knowledge bases.",
+  "version": "1.0.0",
+  "license": "MIT",
+  "keywords": ["geni", "axon", "hsd", "mcp", "intel", "model-context-protocol", "ssl"],
+  "category": "developer-tools",
+  "homepage": "https://labasaservice.visualstudio.com/_git/ssl-marketplace",
+  "repository": "https://labasaservice.visualstudio.com/_git/ssl-marketplace",
+  "agents": "agents/",
+  "skills": "skills/",
+  "mcpServers": "./.mcp.json",
+  "cursorMcpServers": "./.cursor-mcp.json"
+}

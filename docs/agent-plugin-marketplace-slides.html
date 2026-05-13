@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agent Plugin Marketplace — slides</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #151b24;
+      --surface-2: #1c2634;
+      --text: #e8eef7;
+      --muted: #94a3b8;
+      --accent: #5b9cff;
+      --accent-glow: rgba(91, 156, 255, 0.35);
+      --border: #2a3544;
+      --diagram-ring: linear-gradient(135deg, rgba(91, 156, 255, 0.45), rgba(99, 102, 241, 0.25), rgba(91, 156, 255, 0.2));
+      --slide-h2-size: clamp(1.5rem, 2.75vw, 1.9rem);
+      --slide-h2-margin-bottom: 0.75rem;
+      --slide-label-size: 0.72rem;
+      --slide-label-spacing: 0.1em;
+      --slide-label-weight: 700;
+      --slide-subtitle-size: clamp(0.95rem, 1.35vw, 1.05rem);
+      /* 16:9 presentation frame */
+      --present-gap: 0.65rem;
+      --present-chrome: 6.25rem;
+      --present-w: min(1280px, 96vw, calc((100dvh - var(--present-chrome)) * 16 / 9));
+    }
+    * { box-sizing: border-box; }
+    html {
+      height: 100%;
+    }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      min-height: 100dvh;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: #030508;
+      color: var(--text);
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 0.75rem 1rem;
+    }
+    .presentation {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: var(--present-gap);
+      width: var(--present-w);
+      max-width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-height: 100dvh;
+    }
+    .presentation > .bar,
+    .presentation > .deck-wrap,
+    .presentation > .controls {
+      width: 100%;
+    }
+    header.bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      padding: 0.4rem 0.65rem;
+      border-radius: 8px;
+      background: rgba(21, 27, 36, 0.92);
+      border: 1px solid var(--border);
+    }
+    header.bar h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+    }
+    .progress {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .progress strong { color: var(--text); }
+    .deck-wrap {
+      flex: 0 1 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      width: 100%;
+      min-height: 0;
+    }
+    .deck {
+      container-type: size;
+      container-name: slide;
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: calc(100dvh - var(--present-chrome));
+      height: auto;
+      max-width: 100%;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 20px 50px rgba(0, 0, 0, 0.55);
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: clamp(1.35rem, 2.8vmin, 2.65rem) clamp(1.5rem, 3.2vmin, 3rem);
+      overflow: auto;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.28s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .slide.title-slide {
+      justify-content: center;
+    }
+    .slide.active {
+      visibility: visible;
+      opacity: 1;
+      z-index: 2;
+    }
+    .slide:not(.title-slide) {
+      text-align: left;
+      align-items: stretch;
+    }
+    .slide h2 {
+      margin: 0 0 var(--slide-h2-margin-bottom);
+      font-size: var(--slide-h2-size);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    .slide h3 {
+      margin: 1.1rem 0 0.45rem;
+      font-size: var(--slide-label-size);
+      color: var(--accent);
+      font-weight: var(--slide-label-weight);
+      text-transform: uppercase;
+      letter-spacing: var(--slide-label-spacing);
+      line-height: 1.3;
+    }
+    .slide p, .slide li {
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .slide p { margin: 0.4rem 0; }
+    .slide ul { margin: 0.4rem 0 0; padding-left: 1.2rem; }
+    .slide li { margin: 0.3rem 0; }
+    .slide .subtitle {
+      font-size: var(--slide-subtitle-size);
+      color: var(--muted);
+      margin: 0 0 0.85rem;
+      max-width: min(72ch, 100%);
+      line-height: 1.45;
+      text-align: left;
+    }
+    .title-slide {
+      text-align: center;
+      align-items: center;
+    }
+    .title-slide .subtitle {
+      text-align: center;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .title-slide h2 {
+      font-size: clamp(1.85rem, 4vw, 2.4rem);
+      margin-bottom: 0.5rem;
+    }
+    .badge {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(91, 156, 255, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(91, 156, 255, 0.35);
+    }
+    .host-compare-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      width: 100%;
+    }
+    @media (min-width: 720px) {
+      .host-compare-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.25rem;
+      }
+    }
+    .host-card {
+      background: rgba(11, 15, 20, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem 1.1rem;
+      text-align: left;
+    }
+    .host-card--github {
+      border-top: 3px solid #58a6ff;
+    }
+    .host-card--ado {
+      border-top: 3px solid #0078d4;
+    }
+    .host-card .host-card-title {
+      margin: 0 0 0.65rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+    .host-card ul {
+      margin: 0;
+      padding-left: 1.15rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text);
+    }
+    .host-card li {
+      margin: 0.4rem 0;
+    }
+    .host-card .host-note {
+      margin: 0.75rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    pre.tree {
+      margin: 0.65rem 0 0;
+      padding: 1rem 1.15rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      line-height: 1.45;
+      overflow-x: auto;
+      color: #c9d1d9;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    }
+    table.gov {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.65rem 0 0;
+      font-size: 0.88rem;
+    }
+    table.gov thead th {
+      font-size: var(--slide-label-size);
+      letter-spacing: var(--slide-label-spacing);
+      text-transform: uppercase;
+      font-weight: var(--slide-label-weight);
+    }
+    table.gov th,
+    table.gov td {
+      border: 1px solid var(--border);
+      padding: 0.6rem 0.7rem;
+      text-align: left;
+      vertical-align: top;
+    }
+    table.gov th {
+      background: var(--bg);
+      color: var(--accent);
+      font-weight: 600;
+      width: 26%;
+    }
+    table.gov td { color: var(--text); }
+
+    /* “What this repo is” — marketplaces → plugin package (reference layout) */
+    .slide.slide-what-repo {
+      justify-content: flex-start;
+    }
+    .plugin-ecosystem {
+      margin: 0.35rem 0 1rem;
+      padding: 1rem 1rem 1.15rem;
+      background: rgba(11, 15, 20, 0.75);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 100%;
+    }
+    .plugin-ecosystem-tier-title {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: var(--slide-label-size);
+      font-weight: var(--slide-label-weight);
+      text-transform: uppercase;
+      letter-spacing: var(--slide-label-spacing);
+      color: var(--accent);
+      margin: 0 0 0.55rem;
+      line-height: 1.3;
+    }
+    .plugin-ecosystem-tier-title .tier-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.35rem;
+      height: 1.35rem;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      font-size: var(--slide-label-size);
+      font-weight: var(--slide-label-weight);
+      color: var(--accent);
+    }
+    .plugin-ecosystem-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: center;
+      align-items: center;
+    }
+    .plugin-ecosystem-pills--github {
+      justify-content: center;
+    }
+    .plugin-ecosystem-pills--github .plugin-pill {
+      max-width: 100%;
+    }
+    .plugin-pill {
+      padding: 0.42rem 0.8rem;
+      border-radius: 999px;
+      font-size: clamp(0.68rem, 1.1vw, 0.8rem);
+      font-weight: 600;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      border: 1px solid transparent;
+      white-space: normal;
+      text-align: center;
+      hyphens: auto;
+    }
+    .plugin-pill--blue {
+      background: rgba(37, 99, 235, 0.2);
+      color: #bfdbfe;
+      border-color: rgba(96, 165, 250, 0.45);
+    }
+    .plugin-pill--green {
+      background: rgba(22, 163, 74, 0.18);
+      color: #86efac;
+      border-color: rgba(74, 222, 128, 0.4);
+    }
+    .plugin-pill--gold {
+      background: rgba(180, 134, 11, 0.2);
+      color: #fde047;
+      border-color: rgba(250, 204, 21, 0.45);
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.75);
+    }
+    .plugin-pill--purple {
+      background: rgba(126, 34, 206, 0.2);
+      color: #e9d5ff;
+      border-color: rgba(192, 132, 252, 0.45);
+    }
+    .plugin-ecosystem-arrow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0.4rem 0 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1;
+    }
+    .plugin-ecosystem-arrow span {
+      display: inline-block;
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-top: 10px solid #64748b;
+    }
+    .plugin-package-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      justify-content: center;
+      align-items: stretch;
+    }
+    .plugin-package-card {
+      flex: 1 1 108px;
+      min-width: min(108px, 100%);
+      max-width: 148px;
+      padding: 0.55rem 0.6rem 0.55rem 0.75rem;
+      border-radius: 10px;
+      background: rgba(11, 15, 20, 0.9);
+      border: 1px solid var(--card-border, var(--border));
+      position: relative;
+      text-align: left;
+    }
+    .plugin-package-card::before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 8px;
+      bottom: 8px;
+      width: 5px;
+      border-radius: 3px;
+      background: var(--card-dot, var(--accent));
+    }
+    .plugin-package-card .pp-name {
+      margin: 0 0 0.15rem 0.55rem;
+      font-size: clamp(0.72rem, 1vw, 0.82rem);
+      font-weight: 700;
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .plugin-package-card .pp-desc {
+      margin: 0 0 0 0.55rem;
+      font-size: 0.68rem;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+    .plugin-package-card--orange {
+      --card-border: rgba(249, 115, 22, 0.55);
+      --card-dot: #f97316;
+    }
+    .plugin-package-card--green {
+      --card-border: rgba(74, 222, 128, 0.45);
+      --card-dot: #22c55e;
+    }
+    .plugin-package-card--purple {
+      --card-border: rgba(192, 132, 252, 0.45);
+      --card-dot: #a855f7;
+    }
+    .plugin-package-card--red {
+      --card-border: rgba(248, 113, 113, 0.5);
+      --card-dot: #ef4444;
+    }
+    .plugin-package-card--cyan {
+      --card-border: rgba(56, 189, 248, 0.5);
+      --card-dot: #38bdf8;
+    }
+
+    /* Combined flow slide: HTML illustration + narrative */
+    .slide.combined-flow {
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: auto;
+    }
+    .slide.combined-flow.flow-slide-only {
+      justify-content: flex-start;
+    }
+    .flow-slide-only .diagram-hero {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    .flow-slide-only .diagram-hero-inner {
+      padding-bottom: 1.5rem;
+    }
+    .approval-body {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      flex: 1;
+      min-height: 0;
+    }
+    .approval-slide .flow-column {
+      width: 100%;
+    }
+    .diagram-hero {
+      position: relative;
+      border-radius: 14px;
+      padding: 2px;
+      background: var(--diagram-ring);
+      box-shadow: 0 0 40px var(--accent-glow);
+      width: 100%;
+      flex-shrink: 0;
+    }
+    .diagram-hero-inner {
+      background: radial-gradient(ellipse 120% 80% at 50% 0%, #1e2a3d 0%, var(--surface-2) 45%, var(--bg) 100%);
+      border-radius: 12px;
+      padding: clamp(1rem, 2.5vw, 1.75rem);
+      min-height: 0;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: visible;
+    }
+    /* Native flow diagram — avoids SVG scaling that clips Mermaid labels */
+    .flow-illustration {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0;
+      max-width: 100%;
+      font-size: clamp(0.85rem, 1.1vw, 1rem);
+    }
+    .flow-card {
+      background: rgba(11, 15, 20, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      text-align: center;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .flow-card h4 {
+      margin: 0 0 0.5rem;
+      font-size: var(--slide-label-size);
+      font-weight: var(--slide-label-weight);
+      text-transform: uppercase;
+      letter-spacing: var(--slide-label-spacing);
+      color: var(--accent);
+      line-height: 1.3;
+    }
+    .flow-card .flow-main {
+      margin: 0;
+      font-size: clamp(0.88rem, 1.15vw, 1.05rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .flow-card .flow-sub {
+      margin: 0.35rem 0 0;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    .flow-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 0.35rem;
+    }
+    .flow-pills span {
+      padding: 0.4rem 0.75rem;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .flow-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.35rem 0;
+      gap: 0.2rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .flow-link .flow-line {
+      width: 2px;
+      flex: 1;
+      min-height: 0.65rem;
+      background: linear-gradient(var(--accent), rgba(91, 156, 255, 0.35));
+      border-radius: 2px;
+    }
+    .flow-link span {
+      text-align: center;
+      max-width: 100%;
+      padding: 0 0.25rem;
+      line-height: 1.3;
+    }
+    .flow-relations {
+      margin: 0.65rem 0 0;
+      padding: 0 0 0 1.1rem;
+      text-align: left;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+    }
+    .flow-relations li {
+      margin: 0.4rem 0;
+    }
+    .flow-relations code {
+      font-size: 0.82em;
+      color: var(--text);
+    }
+    .flow-relations .rel {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .flow-column h3:first-of-type {
+      margin-top: 0;
+    }
+    ol.flow {
+      margin: 0.35rem 0 0;
+      padding-left: 1.2rem;
+    }
+    ol.flow li {
+      margin: 0.45rem 0;
+      padding-left: 0.2rem;
+      font-size: 0.92rem;
+    }
+    .hint {
+      margin-top: 0.75rem;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+    nav.controls {
+      width: 100%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 0;
+      padding: 0.45rem 0.5rem;
+      border-radius: 8px;
+      background: rgba(21, 27, 36, 0.92);
+      border: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    nav.controls button {
+      font: inherit;
+      cursor: pointer;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+    }
+    nav.controls button:hover:not(:disabled) {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    nav.controls button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    .dots {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .dots button {
+      width: 8px;
+      height: 8px;
+      padding: 0;
+      border-radius: 50%;
+      border: none;
+      background: var(--border);
+      cursor: pointer;
+    }
+    .dots button[aria-current="true"] {
+      background: var(--accent);
+      transform: scale(1.15);
+    }
+    kbd {
+      font-size: 0.75em;
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation">
+    <header class="bar">
+    <h1>Agent Plugin Marketplace</h1>
+    <p class="progress" id="progress" aria-live="polite"><strong>1</strong> / 8</p>
+  </header>
+
+  <div class="deck-wrap">
+    <div class="deck" id="deck" role="region" aria-label="Slide deck">
+      <!-- 1 Title -->
+      <section class="slide active title-slide" data-slide="0" aria-hidden="false">
+        <h2>Agent Plugin Marketplace</h2>
+        <p class="subtitle">Architecture, layout, and governance — in a few slides.</p>
+        <span class="badge">Open this file in a browser</span>
+        <p class="hint">Use <kbd>←</kbd> <kbd>→</kbd> or the buttons below.</p>
+      </section>
+
+      <!-- 2 What this repo is -->
+      <section class="slide slide-what-repo" data-slide="1" aria-hidden="true">
+        <h2>What this repository is</h2>
+
+        <div class="plugin-ecosystem" role="img" aria-label="The DCG marketplace for this repository is the GitHub repo intel-innersource/applications.agents-marketplace.plugins; plugins under plugins/dcg resolve to a standard plugin package.">
+          <div class="plugin-ecosystem-tier-title">
+            <span class="tier-icon" aria-hidden="true">D</span>
+            DCG marketplace (this repo)
+          </div>
+          <div class="plugin-ecosystem-pills plugin-ecosystem-pills--github">
+            <span class="plugin-pill plugin-pill--gold">intel-innersource/applications.agents-marketplace.plugins</span>
+          </div>
+          <div class="plugin-ecosystem-arrow" aria-hidden="true"><span></span></div>
+          <div class="plugin-ecosystem-tier-title">
+            <span class="tier-icon" aria-hidden="true">P</span>
+            Plugin package
+          </div>
+          <div class="plugin-package-row">
+            <div class="plugin-package-card plugin-package-card--orange">
+              <p class="pp-name">plugin.json</p>
+              <p class="pp-desc">Metadata and config</p>
+            </div>
+            <div class="plugin-package-card plugin-package-card--green">
+              <p class="pp-name">skills/</p>
+              <p class="pp-desc">SKILL.md and scripts</p>
+            </div>
+            <div class="plugin-package-card plugin-package-card--purple">
+              <p class="pp-name">agents/</p>
+              <p class="pp-desc">.agent.md files</p>
+            </div>
+            <div class="plugin-package-card plugin-package-card--red">
+              <p class="pp-name">hooks/</p>
+              <p class="pp-desc">hooks.json and scripts</p>
+            </div>
+            <div class="plugin-package-card plugin-package-card--cyan">
+              <p class="pp-name">.mcp.json</p>
+              <p class="pp-desc">MCP server defs</p>
+            </div>
+          </div>
+        </div>
+
+        <p>A <strong>curated marketplace of agent plugins</strong> for AI coding clients (Cursor, VS Code Copilot, and similar).</p>
+        <p>Each <strong>plugin</strong> is a self-contained bundle that can include:</p>
+        <ul>
+          <li><strong>Agent definitions</strong> — e.g. <code>agents/*.md</code></li>
+          <li><strong>Skills</strong> — reusable instructions and scripts under <code>skills/</code></li>
+          <li><strong>MCP configuration</strong> — e.g. <code>.mcp.json</code>, optional <code>server.json</code></li>
+        </ul>
+        <p>Plugins live under <code>plugins/&lt;org&gt;/&lt;group&gt;/&lt;plugin-id&gt;</code> so many teams can contribute. <strong>This repository is the DCG marketplace</strong> — plugins shipped here today live under <code>plugins/dcg/pse/</code> and are listed in <code>.github/plugin/marketplace.json</code>.</p>
+      </section>
+
+      <!-- 3 Git hosting: GitHub Innersource vs Azure DevOps -->
+      <section class="slide slide-host-compare" data-slide="2" aria-hidden="true">
+        <h2>Where to host Git: GitHub Innersource vs Azure DevOps</h2>
+        <p class="subtitle">Intel teams can host marketplace source on GitHub Intel Innersource or in Azure DevOps — different defaults for access and how easy it is for consumers to get started.</p>
+        <div class="host-compare-grid">
+          <div class="host-card host-card--github">
+            <p class="host-card-title">GitHub Intel Innersource</p>
+            <ul>
+              <li><strong>Intel default</strong> for Inner Source Git — familiar to most engineering teams.</li>
+              <li><strong>Blue badge</strong> scenarios often <strong>do not require AGS group</strong> membership for standard access patterns (still follow your org’s identity policy).</li>
+            </ul>
+            <p class="host-note">Best when you want the broadest GitHub-native collaboration and Inner Source alignment.</p>
+          </div>
+          <div class="host-card host-card--ado">
+            <p class="host-card-title">Azure DevOps</p>
+            <ul>
+              <li>Can reduce <strong>per-user Git steps</strong> — not everyone must clone the repo the way many GitHub-based setups assume during first-time setup.</li>
+            </ul>
+            <p class="host-note">Best when minimizing clone-and-config friction matters more than defaulting to GitHub.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4 Directory structure -->
+      <section class="slide" data-slide="3" aria-hidden="true">
+        <h2>Directory structure</h2>
+        <p class="subtitle" style="margin-bottom:0.35rem">How the repository is laid out on disk — see this before the client and review flow.</p>
+        <pre class="tree">applications.agents-marketplace.plugins/
+├── plugins/
+│   └── dcg/                      # organization (DCG)
+│       └── &lt;group&gt;/             # e.g. pse
+│           └── &lt;plugin-id&gt;/     # e.g. geni-plugin, vdc-plugin
+│               ├── plugin.json
+│               ├── .mcp.json       # optional
+│               ├── server.json   # optional
+│               ├── agents/       # optional
+│               └── skills/       # optional
+└── .github/
+    ├── CODEOWNERS
+    └── plugin/
+        └── marketplace.json</pre>
+        <p class="hint"><strong>Client tooling:</strong> <code>.vscode/update-marketplace.ps1</code> can pull and run <code>installScript</code> for new plugins — convenience only, not governance.</p>
+      </section>
+
+      <!-- 5 Clients → registry → plugins (discovery flow only) -->
+      <section class="slide combined-flow flow-slide-only" data-slide="4" aria-hidden="true">
+        <h2>Clients, registry, and plugin folders</h2>
+        <p class="subtitle">How agent clients discover the marketplace entry and how that maps to plugin sources on disk.</p>
+
+        <div class="diagram-hero">
+          <div class="diagram-hero-inner">
+            <div
+              class="flow-illustration"
+              role="img"
+              aria-label="Clients install or discover via marketplace.json, which points to each plugin folder under plugins."
+            >
+              <div class="flow-card">
+                <h4>AI agent clients</h4>
+                <div class="flow-pills">
+                  <span>Cursor</span>
+                  <span>VS Code Copilot</span>
+                </div>
+              </div>
+              <div class="flow-link">
+                <span>install · discover</span>
+                <div class="flow-line" style="min-height: 14px"></div>
+              </div>
+              <div class="flow-card">
+                <h4>Git repository — registry</h4>
+                <p class="flow-main"><code>.github/plugin/marketplace.json</code></p>
+                <p class="flow-sub">Canonical list · <code>source</code> paths · per-plugin <code>owners</code></p>
+              </div>
+              <div class="flow-link">
+                <span>points to</span>
+                <div class="flow-line" style="min-height: 14px"></div>
+              </div>
+              <div class="flow-card">
+                <h4>Git repository — plugin sources</h4>
+                <p class="flow-main"><code>plugins/&lt;org&gt;/&lt;group&gt;/&lt;plugin-id&gt;</code></p>
+                <p class="flow-sub">Agent definitions, skills, MCP wiring live here</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="hint" style="margin-top: 1rem; text-align: center">Next slide: <strong>Governance and access</strong> (badges, AGS, plugin owners).</p>
+      </section>
+
+      <!-- 6 Governance -->
+      <section class="slide" data-slide="5" aria-hidden="true">
+        <h2>Governance and access</h2>
+        <p>Badge tiers are enforced <strong>outside</strong> this repo (hosting / identity). In-repo signals: <code>owners</code> + <code>CODEOWNERS</code>.</p>
+        <table class="gov">
+          <thead>
+            <tr><th>Topic</th><th>Meaning</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Blue badge</strong></td>
+              <td>Default baseline access for the marketplace or hosting surface.</td>
+            </tr>
+            <tr>
+              <td><strong>Green badge</strong></td>
+              <td>Elevated access; <strong>granted via the AGS group</strong>, not automatic with blue.</td>
+            </tr>
+            <tr>
+              <td><strong>Contributors</strong></td>
+              <td><strong>AGS remains available</strong> when entitled (e.g. same group / approved paths), per org policy.</td>
+            </tr>
+            <tr>
+              <td><strong>Plugin owner</strong></td>
+              <td>Every plugin has <strong>owners for approvals</strong>: <code>marketplace.json</code> <code>owners</code> + matching <code>CODEOWNERS</code> paths.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="hint" style="margin-top: 1rem; text-align: center">Next slide: <strong>CODEOWNERS</strong>, review routing, and the approval checklist.</p>
+      </section>
+
+      <!-- 7 CODEOWNERS + approval narrative -->
+      <section class="slide combined-flow approval-slide" data-slide="6" aria-hidden="true">
+        <h2>CODEOWNERS, reviews, and approvals</h2>
+        <p class="subtitle">Pull-request routing in parallel with discovery: who GitHub asks to review, and how to keep registry and ownership aligned.</p>
+
+        <div class="approval-body">
+          <div class="diagram-hero">
+            <div class="diagram-hero-inner">
+              <div
+                class="flow-illustration"
+                role="img"
+                aria-label="CODEOWNERS lists owners for paths; plugin changes request plugin owners; registry or CODEOWNERS edits also need marketplace owners."
+              >
+                <div class="flow-card">
+                  <h4>Git repository — pull requests</h4>
+                  <p class="flow-main"><code>.github/CODEOWNERS</code></p>
+                  <p class="flow-sub">GitHub requests reviews from listed owners when matching paths change</p>
+                  <ul class="flow-relations">
+                    <li><span class="rel">Required reviewers</span> for changes under each plugin directory.</li>
+                    <li><span class="rel">Registry / meta</span> — extra owners when <code>marketplace.json</code> or <code>CODEOWNERS</code> changes (see file comments).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow-column">
+            <h3>Approval flow</h3>
+            <ol class="flow">
+              <li>Contributor opens a PR under <code>plugins/&lt;org&gt;/&lt;group&gt;/&lt;plugin-id&gt;/</code>.</li>
+              <li>GitHub applies <strong>CODEOWNERS</strong> — plugin owner(s) are requested.</li>
+              <li>If the PR touches <code>marketplace.json</code> or <code>CODEOWNERS</code>, <strong>marketplace/repo owners</strong> are also required (see comments in <code>CODEOWNERS</code>).</li>
+            </ol>
+
+            <h3>New plugins</h3>
+            <p class="hint" style="margin-top:0.25rem">Keep <code>owners</code> in <code>marketplace.json</code> aligned with <code>CODEOWNERS</code> for that plugin path.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8 Closing -->
+      <section class="slide title-slide" data-slide="7" aria-hidden="true">
+        <h2>More detail in the repo</h2>
+        <p class="subtitle">Markdown overview with Mermaid diagrams (GitHub renders them there).</p>
+        <p style="max-width:42ch;text-align:center"><code>.github/agent-plugin-marketplace-overview.md</code></p>
+        <p class="hint">README links to this overview for onboarding.</p>
+      </section>
+    </div>
+    </div>
+
+    <nav class="controls" aria-label="Slide navigation">
+      <button type="button" id="prev" aria-label="Previous slide">← Previous</button>
+      <div class="dots" id="dots" role="tablist" aria-label="Slides"></div>
+      <button type="button" id="next" aria-label="Next slide">Next →</button>
+    </nav>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+      var total = slides.length;
+      var current = 0;
+      var progressEl = document.getElementById("progress");
+      var prevBtn = document.getElementById("prev");
+      var nextBtn = document.getElementById("next");
+      var dotsEl = document.getElementById("dots");
+
+      for (var i = 0; i < total; i++) {
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.setAttribute("aria-label", "Go to slide " + (i + 1));
+        dot.setAttribute("role", "tab");
+        dot.addEventListener("click", go.bind(null, i));
+        dotsEl.appendChild(dot);
+      }
+
+      var dotButtons = dotsEl.querySelectorAll("button");
+
+      function updateDots() {
+        for (var d = 0; d < dotButtons.length; d++) {
+          dotButtons[d].setAttribute("aria-current", d === current ? "true" : "false");
+        }
+      }
+
+      function show(index) {
+        if (index < 0 || index >= total) return;
+        current = index;
+        for (var s = 0; s < slides.length; s++) {
+          var on = s === current;
+          slides[s].classList.toggle("active", on);
+          slides[s].setAttribute("aria-hidden", on ? "false" : "true");
+        }
+        progressEl.innerHTML = "<strong>" + (current + 1) + "</strong> / " + total;
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === total - 1;
+        updateDots();
+      }
+
+      function go(index) {
+        show(index);
+      }
+
+      function next() {
+        show(Math.min(current + 1, total - 1));
+      }
+
+      function prev() {
+        show(Math.max(current - 1, 0));
+      }
+
+      prevBtn.addEventListener("click", prev);
+      nextBtn.addEventListener("click", next);
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "ArrowRight" || e.key === "PageDown") {
+          e.preventDefault();
+          next();
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          e.preventDefault();
+          prev();
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          go(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          go(total - 1);
+        }
+      });
+
+      function boot() {
+        show(0);
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", boot);
+      } else {
+        boot();
+      }
+    })();
+  </script>
+</body>
+</html>

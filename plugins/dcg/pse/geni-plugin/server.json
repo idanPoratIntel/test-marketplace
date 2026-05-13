@@ -1,0 +1,19 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "agents-marketplace/geni-plugin",
+  "title": "Geni MCP Server",
+  "description": "MCP server querying Intel internal Axon and HSD knowledge bases directly in your AI agent workflow.",
+  "repository": {
+    "url": "https://github.com/intel-innersource/applications.agents-marketplace.plugins",
+    "source": "github",
+    "subfolder": "plugins/dcg/pse/geni-plugin"
+  },
+  "version": "1.0.0",
+  "starters": [
+    {
+      "name": "geni-plugin",
+      "type": "http",
+      "url": "https://laas-aks-prod01.laas.icloud.intel.com/agentgateway/api/a2a/geni/genimcpserver/"
+    }
+  ]
+}

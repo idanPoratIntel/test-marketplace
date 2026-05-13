@@ -1,0 +1,16 @@
+{
+  "name": "trust-mcp-server",
+  "description": "MCP server exposing The Rapid Unit Selection Tool (TRUST) selected features via the Model Context Protocol.",
+  "version": "1.0.0",
+  "author": {
+    "name": "TRUST Developer",
+    "email": "trust_developer@intel.com"
+  },
+  "license": "MIT",
+  "keywords": [ "trust", "unit selection", "utc", "tracking", "coverage", "mcp", "intel", "model-context-protocol", "ssl" ],
+  "category": "tools",
+  "homepage": "https://trust.laas.intel.com/",
+  "repository": "https://labasaservice.visualstudio.com/Data-Automation/_git/trust-mcp-server",
+  "mcpServers": "./.mcp.json",
+  "cursorMcpServers": "./.cursor-mcp.json"
+}

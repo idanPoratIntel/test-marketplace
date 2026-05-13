@@ -1,0 +1,21 @@
+# Code owners for the Agent Plugin Marketplace.
+#
+# GitHub uses this file to automatically request reviews from the listed
+# owners when a pull request modifies matching paths. The last matching
+# pattern wins, so plugin-specific rules below override the default.
+#
+# Docs: https://docs.github.com/articles/about-code-owners
+
+# Default owners — used for any path not matched by a more specific rule.
+*                                       orly.abramovich@intel.com idan.matan.porat@intel.com lev.sakhnovsky@intel.com
+
+# Plugin owners (DCG / PSE)
+/plugins/dcg/pse/geni-plugin/           orly.abramovich@intel.com idan.matan.porat@intel.com
+/plugins/dcg/pse/vdc-plugin/            roni.dayan@intel.com
+/plugins/dcg/pse/trust-mcp-server/      chuu.tian.yew@intel.com
+
+# Marketplace registry — changes here always require repo-owner approval
+# (in addition to the relevant plugin owner, because plugin paths above
+# only match files under /plugins/**).
+/.github/plugin/marketplace.json        orly.abramovich@intel.com idan.matan.porat@intel.com lev.sakhnovsky@intel.com
+/.github/CODEOWNERS                     orly.abramovich@intel.com idan.matan.porat@intel.com lev.sakhnovsky@intel.com

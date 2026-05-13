@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "trust-mcp-server": {
+      "type": "http",
+      "url": "https://laas-aks-prod01.laas.icloud.intel.com/agentgateway/api/a2a/trust/trustmcpserver/"
+    }
+  }
+}
